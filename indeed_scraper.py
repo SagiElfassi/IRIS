@@ -43,10 +43,12 @@ def append_job_info_dicts(job_listings, jobs, description=False):
         try:
             job_info['company'] = job.find("span", class_='company').text.strip()
         except AttributeError:
-            job_info['company'] = None
-
+            job_info['company'] = 'Unknown'
+        job_info['id'] = job.find('div', class_='recJobLoc')['id'].split('_')[1]
+        job_info['type'] = 'Full-Time' # todo: get job type from listing
+        job_info['active'] = 1
         job_info['location'] = job.find('div', class_="recJobLoc")['data-rc-loc']
-        job_info['title'] = job.find('a')['title'].strip()
+        job_info['position'] = job.find('a')['title'].strip()
         job_info['posted'] = job.find('span', class_='date').text
         job_info['link'] = 'https://il.indeed.com' + job.find('a')['href']
 
@@ -72,7 +74,7 @@ def jobs_search(query = 'data', location='israel', days_ago=2):
     :return: list of dictionaries containing job information
     """
     # set main parameter for search:
-    url = f"https://il.indeed.com/jobs?q={query}&l={location}&fromage={days_ago}&sort=date" # add &start=1
+    url = f"https://il.indeed.com/jobs?q={query}&l={location}&fromage={days_ago}&sort=date&filter=0" # add &start=1
     # create soup from url:
     page = requests.get(url)
     soup = BeautifulSoup(page.content, "html.parser")
@@ -80,8 +82,12 @@ def jobs_search(query = 'data', location='israel', days_ago=2):
     # how many jobs where found:
     search_count = soup.find(id="resultsCol").find(id="searchCountPages").text
     job_count = max([int(s) for s in search_count.replace(',', "").split() if s.isdigit()])
-    page_count = int(np.ceil(job_count / 15))
+    page_count = int(np.ceil(job_count / 10))
+    print(job_count, page_count)
+
     jobs = scrape_jobs_search(url, page_count)
+
+
     return jobs
 
 
@@ -94,21 +100,23 @@ def scrape_jobs_search(url, page_count):
     """
     # loop over all pages:
     jobs = []
-    for page in range(0, page_count * 10 + 1, 10):
+
+    for page in range(0, page_count * 10, 10):
         print(f'scraping page number {int(page / 10)}...')
 
-        url = f"{url}&start={page}"  # add &start=1
-        webpage = requests.get(url)
+        url_page = f"{url}&start={page}"  # add &start=1
+        print(url_page)
+        webpage = requests.get(url_page)
         soup = BeautifulSoup(webpage.content, "html.parser")
         job_listings = soup.find(id="resultsCol").find_all('div', class_='jobsearch-SerpJobCard')
-        jobs = append_job_info_dicts(job_listings, jobs)
+        jobs += append_job_info_dicts(job_listings, jobs)
 
     return jobs
 
 def main():
 
-    job_listings = jobs_search(query='data scientist', location='israel', days_ago=7)
-    print(job_listings)
+    job_listings = jobs_search(query='data+scientist', location='israel', days_ago=7)
+    print(len(job_listings))
 
 
 if __name__ == "__main__":
