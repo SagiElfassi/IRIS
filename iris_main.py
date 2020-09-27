@@ -1,5 +1,5 @@
 import os
-from data.database import write_jobs, create_sqlite_db
+from data.database import insert_jobs, create_sqlite_db
 from glassdoor_scraper import get_jobs
 
 POS = "data analyst"
@@ -11,7 +11,7 @@ def main():
     create_sqlite_db(DB)
 
     glassdoor_jobs = get_jobs(keyword=POS, location=LOC)
-    write_jobs(DB, glassdoor_jobs)
+    insert_jobs(DB, glassdoor_jobs)
 
 
 if __name__ == "__main__":

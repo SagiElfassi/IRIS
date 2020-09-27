@@ -132,7 +132,7 @@ def scrape_jobs_search(url, page_count, query):
 def main():
 
     posted = "לפני 8 ימים"
-    print(datetime.timestamp((get_date_posted(posted))))
+    print(datetime.timestamp((get_timestamp_posted(posted))))
     job_listings = jobs_search(query='data scientist', location='israel', days_ago=2)
 
 

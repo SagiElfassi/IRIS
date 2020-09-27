@@ -85,7 +85,7 @@ def get_job_data(driver):
                 except:
                     time.sleep(5)
 
-            jobs.append({"id": company_name+","+job_title,
+            jobs.append({"key": company_name+","+job_title,
                          "position": job_title,
                          "company": company_name,
                          "location": location,
