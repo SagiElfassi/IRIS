@@ -1,8 +1,5 @@
 import sqlite3
 import os
-import csv
-import tqdm
-import pandas as pd
 
 # create database
 database = os.path.join('data','jobs.db')
