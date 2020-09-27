@@ -28,7 +28,7 @@ def get_job_description(link):
     return html.find('div', id="jobDescriptionText").text
 
 
-def append_job_info_dicts(job_listings, jobs, query, description=False):
+def append_job_info_dicts(job_listings, query, description=False):
     """
     Function creates a list of job info dictionaries
     :param job_listings: soup to extract information from
@@ -36,9 +36,8 @@ def append_job_info_dicts(job_listings, jobs, query, description=False):
     :param description: if true gets full job description
     :return: list of dictionaries containing job information
     """
-
+    j = []
     for job in job_listings:
-
         # create job info dict:
         job_info = dict()
 
@@ -53,8 +52,9 @@ def append_job_info_dicts(job_listings, jobs, query, description=False):
         job_info['position'] = job.find('a')['title'].strip().lower()
         job_info['posted'] = get_timestamp_posted(job.find('span', class_='date').text.lower())
         job_info['link'] = 'https://il.indeed.com' + job.find('a')['href']
+        print(query)
         job_info['query'] = query.replace('+', ' ')
-        print(job_info['posted'])
+        job_info['key'] = job_info['company'] + "," + job_info['position']
         # full description or summary:
         if description:
             job_info['description'] = get_job_description(job_info['link'])
@@ -62,9 +62,9 @@ def append_job_info_dicts(job_listings, jobs, query, description=False):
             job_info['description'] = job.find('div', class_='summary').text.strip()
 
         # append dictionary to job list:
-        jobs.append(job_info)
+        j.append(job_info)
 
-    return jobs
+    return j
 
 
 def get_timestamp_posted(posted):
@@ -118,16 +118,14 @@ def scrape_jobs_search(url, page_count, query):
     """
     # loop over all pages:
     jobs = []
-
     for page in range(0, page_count * 10, 10):
         print(f'scraping page number {int(page / 10)}...')
 
         url_page = f"{url}&start={page}"  # add &start=1
-        print(url_page)
         webpage = requests.get(url_page)
         soup = BeautifulSoup(webpage.content, "html.parser")
         job_listings = soup.find(id="resultsCol").find_all('div', class_='jobsearch-SerpJobCard')
-        jobs += append_job_info_dicts(job_listings, jobs, query)
+        jobs += append_job_info_dicts(job_listings, query)
 
     return jobs
 
