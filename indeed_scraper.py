@@ -11,8 +11,6 @@ import requests
 import numpy as np
 
 
-
-
 def get_job_description(link):
     """
     This function gets full job description given the link to the job opening.
