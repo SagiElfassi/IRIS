@@ -1,11 +1,3 @@
-"""
-Project:
-Module:
-Authors:
-Last Updated:
-"""
-
-# Load Packages:
 from bs4 import BeautifulSoup
 import requests
 import numpy as np
@@ -16,11 +8,9 @@ from utils import get_digits
 def get_job_description(link):
     """
     This function gets full job description given the link to the job opening.
-
     :param link: url to specific job listing, string
     :return: full job description, string
     """
-
     page = requests.get(link)
     html = BeautifulSoup(page.content, "html.parser")
     return html.find('div', id="jobDescriptionText").text
@@ -50,7 +40,6 @@ def append_job_info_dicts(job_listings, query, description=False):
         job_info['position'] = job.find('a')['title'].strip().lower()
         job_info['posted'] = get_timestamp_posted(job.find('span', class_='date').text.lower())
         job_info['link'] = 'https://il.indeed.com' + job.find('a')['href']
-        print(query)
         job_info['query'] = query.replace('+', ' ')
         job_info['key'] = job_info['company'] + "," + job_info['position']
         # full description or summary:
@@ -78,9 +67,6 @@ def get_timestamp_posted(posted):
     else:
         days_ago = max(get_digits(posted.split()))
         return datetime.timestamp(datetime.today() - timedelta(days=int(days_ago)))
-
-
-
 
 
 def jobs_search(query = 'data', location='israel', days_ago=2):
@@ -116,12 +102,10 @@ def scrape_jobs_search(url, page_count, query):
     """
     # loop over all pages:
     jobs = []
-
     for page in range(0, page_count * 10, 10):
-        print(f'scraping page number {int(page / 10)}...')
-
+        # print(f'scraping page number {int(page / 10)}...')
         url_page = f"{url}&start={page}"  # add &start=1
-        print(url_page)
+        # print(url_page)
         webpage = requests.get(url_page)
         soup = BeautifulSoup(webpage.content, "html.parser")
         job_listings = soup.find(id="resultsCol").find_all('div', class_='jobsearch-SerpJobCard')
@@ -129,13 +113,4 @@ def scrape_jobs_search(url, page_count, query):
 
     return jobs
 
-def main():
-
-    posted = "לפני 8 ימים"
-    print(datetime.timestamp((get_timestamp_posted(posted))))
-    job_listings = jobs_search(query='data scientist', location='israel', days_ago=2)
-
-
-if __name__ == "__main__":
-    main()
 

@@ -11,7 +11,7 @@ TODAY = date.today()
 
 def get_driver():
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
     return webdriver.Chrome(executable_path=r'./chromedriver', options=chrome_options)
 
 
@@ -63,6 +63,11 @@ def get_url_if_possible(driver):
         return "Apply from glassdoor"
 
 
+def clean_cmp_name(driver):
+    tmp_cmp_name = driver.find_element_by_xpath('.//div[@class="employerName"]').text.lower()
+    return tmp_cmp_name.split('\n')[0]
+
+
 def get_job_data(driver):
     num_jobs = get_num_results(driver)
     jobs = []
@@ -75,7 +80,7 @@ def get_job_data(driver):
             collected_successfully = False
             while not collected_successfully:
                 try:
-                    company_name = driver.find_element_by_xpath('.//div[@class="employerName"]').text.lower()
+                    company_name = clean_cmp_name(driver)
                     location = driver.find_element_by_xpath('.//div[@class="location"]').text.lower()
                     job_title = driver.find_element_by_xpath('.//div[contains(@class, "title")]').text.lower()
                     job_date = TODAY - timedelta(get_time_delta(days_old[i]))
