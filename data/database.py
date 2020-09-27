@@ -1,10 +1,13 @@
 import sqlite3
 import os
 
+# create database
+database = os.path.join('data','jobs.db')
+
 
 def create_sqlite_db(database):
     if os.path.exists(database):
-        return
+        os.remove(database)
 
     with sqlite3.connect(database) as con:
         cur = con.cursor()
