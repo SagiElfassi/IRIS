@@ -13,8 +13,7 @@ import csv
 import tqdm
 import pandas as pd
 
-
-#create database
+# create database
 database = os.path.join('data','jobs.db')
 
 
