@@ -50,6 +50,7 @@ def append_job_info_dicts(job_listings, jobs, description=False):
         job_info['posted'] = job.find('span', class_='date').text
         job_info['link'] = 'https://il.indeed.com' + job.find('a')['href']
 
+
         # full description or summary:
         if description:
             job_info['description'] = get_job_description(job_info['link'])
@@ -62,7 +63,7 @@ def append_job_info_dicts(job_listings, jobs, description=False):
     return jobs
 
 
-def jobs_search(query = 'data', location='israel', days_ago=2):
+def jobs_search(query='data', location='israel', days_ago=2):
     """
     Function takes a query and scrapes all the results.
 
@@ -84,8 +85,6 @@ def jobs_search(query = 'data', location='israel', days_ago=2):
     print(job_count, page_count)
 
     jobs = scrape_jobs_search(url, page_count)
-
-
     return jobs
 
 
@@ -111,8 +110,8 @@ def scrape_jobs_search(url, page_count):
 
     return jobs
 
-def main():
 
+def main():
     job_listings = jobs_search(query='data+scientist', location='israel', days_ago=7)
     print(len(job_listings))
 

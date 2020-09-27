@@ -1,27 +1,10 @@
-"""
-Project:
-Module:
-Authors:
-Last Updated:
-"""
-
-
 import sqlite3
-import pandas as pd
 import os
-import csv
-import tqdm
-import pandas as pd
-
-
-#create database
-database = os.path.join('jobs.db')
 
 
 def create_sqlite_db(database):
-    print(database)
     if os.path.exists(database):
-        os.remove(database)
+        return
 
     with sqlite3.connect(database) as con:
         cur = con.cursor()
@@ -45,11 +28,10 @@ def create_sqlite_db(database):
         # create openings table
         cur.execute('''CREATE TABLE employment_type
                     ([id] INTEGER NOT NULL
-                    , [type] TEXT NOT NULL
-                    )''')
+                    , [type] TEXT NOT NULL)''')
 
 
-def insert_jobs(database, jobs):
+def write_jobs(database, jobs):
     """
     function to insert job into DB. If job_id already exists, the entry is updated.
 
@@ -62,8 +44,6 @@ def insert_jobs(database, jobs):
 
         # loop over scraped jobs:
         for job in jobs:
-            print(job['link'])
-
             # create a tuple of all values to insert into the db:
             values = (job['id'], job['position'], job['company'],
                       job['location'], job['type'], job['posted'],
@@ -73,12 +53,3 @@ def insert_jobs(database, jobs):
                                              location, type, posted, 
                                              active, link, description)
                             VALUES {values};''')
-
-
-def main():
-
-
-    insert_jobs(database, test_job)
-
-if __name__ == "__main__":
-    main()
