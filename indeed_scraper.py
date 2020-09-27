@@ -9,6 +9,8 @@ Last Updated:
 from bs4 import BeautifulSoup
 import requests
 import numpy as np
+from datetime import timedelta, datetime
+from utils import get_digits
 
 
 
@@ -26,7 +28,7 @@ def get_job_description(link):
     return html.find('div', id="jobDescriptionText").text
 
 
-def append_job_info_dicts(job_listings, jobs, description=False):
+def append_job_info_dicts(job_listings, jobs, query, description=False):
     """
     Function creates a list of job info dictionaries
     :param job_listings: soup to extract information from
@@ -41,17 +43,18 @@ def append_job_info_dicts(job_listings, jobs, description=False):
         job_info = dict()
 
         try:
-            job_info['company'] = job.find("span", class_='company').text.strip()
+            job_info['company'] = job.find("span", class_='company').text.strip().lower()
         except AttributeError:
-            job_info['company'] = 'Unknown'
+            job_info['company'] = 'unknown'
         job_info['id'] = job.find('div', class_='recJobLoc')['id'].split('_')[1]
         job_info['type'] = 'Full-Time' # todo: get job type from listing
         job_info['active'] = 1
-        job_info['location'] = job.find('div', class_="recJobLoc")['data-rc-loc']
-        job_info['position'] = job.find('a')['title'].strip()
-        job_info['posted'] = job.find('span', class_='date').text
+        job_info['location'] = job.find('div', class_="recJobLoc")['data-rc-loc'].lower()
+        job_info['position'] = job.find('a')['title'].strip().lower()
+        job_info['posted'] = get_timestamp_posted(job.find('span', class_='date').text.lower())
         job_info['link'] = 'https://il.indeed.com' + job.find('a')['href']
-
+        job_info['query'] = query.replace('+', ' ')
+        print(job_info['posted'])
         # full description or summary:
         if description:
             job_info['description'] = get_job_description(job_info['link'])
@@ -62,6 +65,24 @@ def append_job_info_dicts(job_listings, jobs, description=False):
         jobs.append(job_info)
 
     return jobs
+
+
+def get_timestamp_posted(posted):
+    """
+    Takes a string and returns the date of the post
+    :param posted: string
+    :return: date
+    """
+
+    if posted == "היום":
+        return datetime.timestamp(datetime.today())
+
+    else:
+        days_ago = max(get_digits(posted.split()))
+        return datetime.timestamp(datetime.today() - timedelta(days=int(days_ago)))
+
+
+
 
 
 def jobs_search(query = 'data', location='israel', days_ago=2):
@@ -83,15 +104,12 @@ def jobs_search(query = 'data', location='israel', days_ago=2):
     search_count = soup.find(id="resultsCol").find(id="searchCountPages").text
     job_count = max([int(s) for s in search_count.replace(',', "").split() if s.isdigit()])
     page_count = int(np.ceil(job_count / 10))
-    print(job_count, page_count)
-
-    jobs = scrape_jobs_search(url, page_count)
-
+    jobs = scrape_jobs_search(url, page_count, query)
 
     return jobs
 
 
-def scrape_jobs_search(url, page_count):
+def scrape_jobs_search(url, page_count, query):
     """
 
     :param url: base url with added search query
@@ -109,14 +127,15 @@ def scrape_jobs_search(url, page_count):
         webpage = requests.get(url_page)
         soup = BeautifulSoup(webpage.content, "html.parser")
         job_listings = soup.find(id="resultsCol").find_all('div', class_='jobsearch-SerpJobCard')
-        jobs += append_job_info_dicts(job_listings, jobs)
+        jobs += append_job_info_dicts(job_listings, jobs, query)
 
     return jobs
 
 def main():
 
-    job_listings = jobs_search(query='data+scientist', location='israel', days_ago=7)
-    print(len(job_listings))
+    posted = "לפני 8 ימי"
+    print(datetime.timestamp((get_date_posted(posted))))
+    job_listings = jobs_search(query='data scientist', location='israel', days_ago=2)
 
 
 if __name__ == "__main__":

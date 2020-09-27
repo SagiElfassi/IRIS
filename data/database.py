@@ -15,7 +15,7 @@ import pandas as pd
 
 
 #create database
-database = os.path.join('jobs.db')
+database = os.path.join('data','jobs.db')
 
 
 def create_sqlite_db(database):
@@ -29,14 +29,16 @@ def create_sqlite_db(database):
         # create openings table
         cur.execute('''CREATE TABLE openings_indeed
                      ([job_id] TEXT NOT NULL
+                     , [query] TEXT NOT NULL
                      , [position] TEXT NOT NULL
                      , [company] TEXT NOT NULL
                      , [location] TEXT NOT NULL
-                     , [type] INTEGER 
-                     , [posted] TEXT NOT NULL
+                     , [type] TEXT 
+                     , [posted] timestamp
                      , [active] INTEGER NOT NULL
                      , [link] TEXT NOT NULL
                      , [description] TEXT NOT NULL
+                     
                      )''')
 
         # create a unique value to prevent duplicates:
@@ -65,20 +67,22 @@ def insert_jobs(database, jobs):
             print(job['link'])
 
             # create a tuple of all values to insert into the db:
-            values = (job['id'], job['position'], job['company'],
+            values = (job['id'], job['query'], job['position'], job['company'],
                       job['location'], job['type'], job['posted'],
-                      job['active'], job['link'], job['description'])
+                      job['active'], job['link'],  job['description'])
+            print(values)
+
+
             # execute query:
-            cur.execute(f'''INSERT OR REPLACE INTO openings_indeed (job_id, position, company, 
+            cur.execute(f'''INSERT OR REPLACE INTO openings_indeed (job_id, query, position, company, 
                                              location, type, posted, 
-                                             active, link, description)
-                            VALUES {values};''')
+                                             active, link, description) VALUES {values};''')
 
 
 def main():
 
-
-    insert_jobs(database, test_job)
+    create_sqlite_db(database)
+    # insert_jobs(database, test_job)
 
 if __name__ == "__main__":
     main()
