@@ -51,6 +51,14 @@ def create_sqlite_db(database):
                     , [type] TEXT NOT NULL
                     )''')
 
+        # create user table
+        cur.execute('''CREATE TABLE user
+                             ([phone] integer NOT NULL
+                             , [name] TEXT 
+                             , [position] TEXT NOT NULL
+                             , [location] TEXT NOT NULL
+                             )''')
+
 
 def insert_jobs(database, jobs):
     """
