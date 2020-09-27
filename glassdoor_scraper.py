@@ -5,10 +5,7 @@ import time
 from datetime import date, timedelta
 from bs4 import BeautifulSoup
 
-
-GLASS_DOOR = r"https://www.glassdoor.com/sitedirectory/title-jobs.htm"
-POS = "data scientist"
-LOC = "tel aviv"
+GLASSDOOR = r"https://www.glassdoor.com/sitedirectory/title-jobs.htm"
 TODAY = date.today()
 
 
@@ -78,21 +75,26 @@ def get_job_data(driver):
             collected_successfully = False
             while not collected_successfully:
                 try:
-                    company_name = driver.find_element_by_xpath('.//div[@class="employerName"]').text
-                    location = driver.find_element_by_xpath('.//div[@class="location"]').text
-                    job_title = driver.find_element_by_xpath('.//div[contains(@class, "title")]').text
+                    company_name = driver.find_element_by_xpath('.//div[@class="employerName"]').text.lower()
+                    location = driver.find_element_by_xpath('.//div[@class="location"]').text.lower()
+                    job_title = driver.find_element_by_xpath('.//div[contains(@class, "title")]').text.lower()
                     job_date = TODAY - timedelta(get_time_delta(days_old[i]))
                     job_url = get_url_if_possible(driver)
-                    # job_description = driver.find_element_by_xpath('.//div[@class="jobDescriptionContent desc"]').text
+                    job_description = driver.find_element_by_xpath('.//div[@class="jobDescriptionContent desc"]').text
                     collected_successfully = True
                 except:
                     time.sleep(5)
 
-            jobs.append({"Job Title": job_title,
-                         "Company Name": company_name,
-                         "Location": location,
-                         "Date Posted": job_date,
-                         "Job Url": job_url})
+            jobs.append({"key": company_name+","+job_title,
+                         "position": job_title,
+                         "company": company_name,
+                         "location": location,
+                         "posted": str(job_date),
+                         "link": job_url,
+                         "description": "job_description",
+                         "active": 1,
+                         "type": "FULL-TIME"})
+
         if len(jobs) == num_jobs:
             break
         try:
@@ -104,7 +106,14 @@ def get_job_data(driver):
     return jobs
 
 
-def get_jobs(keyword, location, driver):
+def get_jobs(keyword, location):
+    '''
+    :param keyword: [str] search by this keyword
+    :param location: [str] search by this location
+    :return: [dictionary] of job rsults from glassdoor
+    '''
+    driver = get_driver()
+    driver.get(GLASSDOOR)
     position_element = driver.find_element_by_id("sc.keyword")
     position_element.send_keys(keyword)
     location_element = driver.find_element_by_id("sc.location")
@@ -114,10 +123,6 @@ def get_jobs(keyword, location, driver):
     driver = get_rid_off_signup(driver)
     jobs = get_job_data(driver)
 
-    for job in jobs:
-        print(job)
+    return jobs
 
 
-d = get_driver()
-d.get(GLASS_DOOR)
-get_jobs(POS, LOC, d)

@@ -116,10 +116,12 @@ def scrape_jobs_search(url, page_count, query):
     """
     # loop over all pages:
     jobs = []
+
     for page in range(0, page_count * 10, 10):
         print(f'scraping page number {int(page / 10)}...')
 
         url_page = f"{url}&start={page}"  # add &start=1
+        print(url_page)
         webpage = requests.get(url_page)
         soup = BeautifulSoup(webpage.content, "html.parser")
         job_listings = soup.find(id="resultsCol").find_all('div', class_='jobsearch-SerpJobCard')
@@ -129,8 +131,8 @@ def scrape_jobs_search(url, page_count, query):
 
 def main():
 
-    posted = "לפני 8 ימי"
-    print(datetime.timestamp((get_date_posted(posted))))
+    posted = "לפני 8 ימים"
+    print(datetime.timestamp((get_timestamp_posted(posted))))
     job_listings = jobs_search(query='data scientist', location='israel', days_ago=2)
 
 

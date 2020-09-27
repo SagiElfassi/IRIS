@@ -1,6 +1,6 @@
 import os
 from indeed_scraper import jobs_search
-from data.database import insert_jobs, create_sqlite_db
+from .data.database import insert_jobs, create_sqlite_db
 
 
 database = os.path.join('data', 'jobs.db')

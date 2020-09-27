@@ -1,13 +1,4 @@
-"""
-Project:
-Module:
-Authors:
-Last Updated:
-"""
-
-
 import sqlite3
-import pandas as pd
 import os
 import csv
 import tqdm
@@ -18,7 +9,6 @@ database = os.path.join('data','jobs.db')
 
 
 def create_sqlite_db(database):
-
     if os.path.exists(database):
         os.remove(database)
 
@@ -28,17 +18,15 @@ def create_sqlite_db(database):
         # create openings table
         cur.execute('''CREATE TABLE openings_indeed
                      ([job_id] TEXT NOT NULL
-                     , [indeed_id] TEXT 
-                     , [query] TEXT NOT NULL
-                     , [position] TEXT NOT NULL
-                     , [company] TEXT NOT NULL
-                     , [location] TEXT NOT NULL
-                     , [type] TEXT 
-                     , [posted] timestamp
-                     , [active] INTEGER NOT NULL
-                     , [link] TEXT NOT NULL
-                     , [description] TEXT NOT NULL
-                     
+                     ,[indeed_id] TEXT 
+                     ,[position] TEXT NOT NULL
+                     ,[company] TEXT NOT NULL
+                     ,[location] TEXT NOT NULL
+                     ,[type] TEXT 
+                     ,[posted] timestamp
+                     ,[active] INTEGER NOT NULL
+                     ,[link] TEXT NOT NULL
+                     ,[description] TEXT NOT NULL          
                      )''')
 
         # create a unique value to prevent duplicates:
@@ -47,8 +35,7 @@ def create_sqlite_db(database):
         # create openings table
         cur.execute('''CREATE TABLE employment_type
                     ([id] INTEGER NOT NULL
-                    , [type] TEXT NOT NULL
-                    )''')
+                    , [type] TEXT NOT NULL)''')
 
         # create user table
         cur.execute('''CREATE TABLE user
@@ -72,23 +59,14 @@ def insert_jobs(database, jobs):
 
         # loop over scraped jobs:
         for job in jobs:
-
             # create a tuple of all values to insert into the db:
-            values = (job['key'], job['query'], job['position'], job['company'],
+            values = (job['key'], job['position'], job['company'],
                       job['location'], job['type'], job['posted'],
                       job['active'], job['link'],  job['description'])
 
 
             # execute query:
-            cur.execute(f'''INSERT OR REPLACE INTO openings_indeed (job_id, query, position, company, 
+            cur.execute(f'''INSERT OR REPLACE INTO openings_indeed (job_id, position, company, 
                                              location, type, posted, 
-                                             active, link, description) VALUES {values};''')
-
-
-def main():
-
-    create_sqlite_db(database)
-    # insert_jobs(database, test_job)
-
-if __name__ == "__main__":
-    main()
+                                             active, link, description)
+                            VALUES {values};''')
