@@ -12,14 +12,14 @@ def create_sqlite_db(database):
         # create openings table
         cur.execute('''CREATE TABLE openings_indeed
                      ([job_id] TEXT NOT NULL
-                     , [position] TEXT NOT NULL
-                     , [company] TEXT NOT NULL
-                     , [location] TEXT NOT NULL
-                     , [type] INTEGER 
-                     , [posted] TEXT NOT NULL
-                     , [active] INTEGER NOT NULL
-                     , [link] TEXT NOT NULL
-                     , [description] TEXT NOT NULL
+                     ,[position] TEXT NOT NULL
+                     ,[company] TEXT NOT NULL
+                     ,[location] TEXT NOT NULL
+                     ,[type] INTEGER 
+                     ,[posted] TEXT NOT NULL
+                     ,[active] INTEGER NOT NULL
+                     ,[link] TEXT NOT NULL
+                     ,[description] TEXT NOT NULL
                      )''')
 
         # create a unique value to prevent duplicates:
@@ -44,6 +44,7 @@ def write_jobs(database, jobs):
 
         # loop over scraped jobs:
         for job in jobs:
+            print(job)
             # create a tuple of all values to insert into the db:
             values = (job['id'], job['position'], job['company'],
                       job['location'], job['type'], job['posted'],

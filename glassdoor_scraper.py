@@ -85,12 +85,15 @@ def get_job_data(driver):
                 except:
                     time.sleep(5)
 
-            jobs.append({"position": job_title,
+            jobs.append({"id": company_name+","+job_title,
+                         "position": job_title,
                          "company": company_name,
                          "location": location,
-                         "posted": job_date,
+                         "posted": str(job_date),
                          "link": job_url,
-                         "description": job_description})
+                         "description": "job_description",
+                         "active": 1,
+                         "type": "FULL-TIME"})
 
         if len(jobs) == num_jobs:
             break

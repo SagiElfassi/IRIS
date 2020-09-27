@@ -7,7 +7,7 @@ LOC = "tel aviv"
 
 
 def main():
-    DB = os.path.join('jobs.db')
+    DB = os.path.join('data/jobs.db')
     create_sqlite_db(DB)
 
     glassdoor_jobs = get_jobs(keyword=POS, location=LOC)
