@@ -12,14 +12,17 @@ def create_sqlite_db(database):
         # create openings table
         cur.execute('''CREATE TABLE openings_indeed
                      ([job_id] TEXT NOT NULL
-                     ,[position] TEXT NOT NULL
-                     ,[company] TEXT NOT NULL
-                     ,[location] TEXT NOT NULL
-                     ,[type] INTEGER 
-                     ,[posted] TEXT NOT NULL
-                     ,[active] INTEGER NOT NULL
-                     ,[link] TEXT NOT NULL
-                     ,[description] TEXT NOT NULL
+                     , [indeed_id] TEXT 
+                     , [query] TEXT NOT NULL
+                     , [position] TEXT NOT NULL
+                     , [company] TEXT NOT NULL
+                     , [location] TEXT NOT NULL
+                     , [type] TEXT 
+                     , [posted] timestamp
+                     , [active] INTEGER NOT NULL
+                     , [link] TEXT NOT NULL
+                     , [description] TEXT NOT NULL
+                     
                      )''')
 
         # create a unique value to prevent duplicates:
@@ -31,7 +34,7 @@ def create_sqlite_db(database):
                     , [type] TEXT NOT NULL)''')
 
 
-def write_jobs(database, jobs):
+def insert_jobs(database, jobs):
     """
     function to insert job into DB. If job_id already exists, the entry is updated.
 
@@ -44,13 +47,15 @@ def write_jobs(database, jobs):
 
         # loop over scraped jobs:
         for job in jobs:
-            print(job)
+
             # create a tuple of all values to insert into the db:
-            values = (job['id'], job['position'], job['company'],
+            values = (job['key'], job['query'], job['position'], job['company'],
                       job['location'], job['type'], job['posted'],
-                      job['active'], job['link'], job['description'])
+                      job['active'], job['link'],  job['description'])
+
+
             # execute query:
-            cur.execute(f'''INSERT OR REPLACE INTO openings_indeed (job_id, position, company, 
+            cur.execute(f'''INSERT OR REPLACE INTO openings_indeed (job_id, query, position, company, 
                                              location, type, posted, 
                                              active, link, description)
                             VALUES {values};''')
