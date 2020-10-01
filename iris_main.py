@@ -3,8 +3,8 @@ from data.database import insert_jobs, create_sqlite_db
 from glassdoor_scraper import get_jobs
 from indeed_scraper import jobs_search
 
-POS = "data analyst"
-LOC = "tel aviv"
+POS = "data scientist"
+LOC = "Tel Aviv"
 
 
 def main():
