@@ -1,19 +1,18 @@
 import sqlite3
 import os
 
-# create database
-database = os.path.join('data','jobs.db')
 
 
 def create_sqlite_db(database):
+
     if os.path.exists(database):
-        os.remove(database)
+        return
 
     with sqlite3.connect(database) as con:
         cur = con.cursor()
 
         # create openings table
-        cur.execute('''CREATE TABLE openings_indeed
+        cur.execute('''CREATE TABLE IF NOT EXISTS openings_indeed
                      ([job_id] TEXT NOT NULL
                      ,[indeed_id] TEXT 
                      ,[position] TEXT NOT NULL
@@ -30,17 +29,18 @@ def create_sqlite_db(database):
         cur.execute('''CREATE UNIQUE INDEX idx_openings_job_id ON openings_indeed(job_id);''')
 
         # create openings table
-        cur.execute('''CREATE TABLE employment_type
+        cur.execute('''CREATE TABLE IF NOT EXISTS employment_type
                     ([id] INTEGER NOT NULL
                     , [type] TEXT NOT NULL)''')
 
         # create user table
-        cur.execute('''CREATE TABLE user
+        cur.execute('''CREATE TABLE IF NOT EXISTS user
                              ([phone] integer NOT NULL
                              , [name] TEXT 
                              , [position] TEXT NOT NULL
                              , [location] TEXT NOT NULL
                              )''')
+
 
 
 def insert_jobs(database, jobs):
