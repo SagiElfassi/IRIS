@@ -11,7 +11,7 @@ TODAY = date.today()
 
 def get_driver():
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    # chrome_options.add_argument("--headless")
     return webdriver.Chrome(executable_path=r'./chromedriver', options=chrome_options)
 
 

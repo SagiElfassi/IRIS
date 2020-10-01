@@ -1,9 +1,6 @@
 import sqlite3
 import os
 
-# create database
-database = os.path.join('data','jobs.db')
-
 
 def create_sqlite_db(database):
     if os.path.exists(database):
@@ -32,21 +29,20 @@ def create_sqlite_db(database):
         # create openings table
         cur.execute('''CREATE TABLE employment_type
                     ([id] INTEGER NOT NULL
-                    , [type] TEXT NOT NULL)''')
+                    ,[type] TEXT NOT NULL)''')
 
         # create user table
         cur.execute('''CREATE TABLE user
                              ([phone] integer NOT NULL
-                             , [name] TEXT 
-                             , [position] TEXT NOT NULL
-                             , [location] TEXT NOT NULL
+                             ,[name] TEXT 
+                             ,[position] TEXT NOT NULL
+                             ,[location] TEXT NOT NULL
                              )''')
 
 
 def insert_jobs(database, jobs):
     """
     function to insert job into DB. If job_id already exists, the entry is updated.
-
     :param database: database path/name
     :param jobs: scraped data as a list of tuples containing ()
     :return: None
@@ -60,9 +56,8 @@ def insert_jobs(database, jobs):
             values = (job['key'], job['position'], job['company'],
                       job['location'], job['type'], job['posted'],
                       job['active'], job['link'],  job['description'])
-
-
             # execute query:
+            print(job)
             cur.execute(f'''INSERT OR REPLACE INTO openings_indeed (job_id, position, company, 
                                              location, type, posted, 
                                              active, link, description)

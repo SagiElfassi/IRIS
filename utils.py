@@ -1,9 +1,6 @@
-
-
-
-def get_digits(str1):
-    c = []
-    for i in str1:
-        if i.isdigit():
-            c.append(i)
-    return c
+def get_digits(string):
+    digits = []
+    for char in string:
+        if char.isdigit():
+            digits.append(char)
+    return digits
